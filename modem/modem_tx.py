@@ -26,8 +26,12 @@ def bits_to_audio(bits):
         audio = np.concatenate((audio, tone))
     return audio
 
+PREAMBLE = "10101010" * 4
+
 text = input("Введите сообщение: ")
-bits = text_to_bits(text)
+data_bits = text_to_bits(text)
+
+bits = PREAMBLE + data_bits
 
 print("Биты:", bits)
 print("Передача...")

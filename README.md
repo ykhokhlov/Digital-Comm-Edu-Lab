@@ -1,76 +1,106 @@
-# 📡 Радио-модем своими руками
+# 📡 Digital Radio Modem — Educational Lab
 
-Этот проект показывает, как работает модем.
+This project demonstrates how a modem works at the most fundamental level.
 
-Модем = MOdulator + DEModulator
+Modem = MOdulator + DEModulator.
 
-Компьютер не передаёт буквы.
-Он передаёт 0 и 1.
+Computers do not transmit letters.
+They transmit 0s and 1s.
 
-Мы превращаем:
-0 → звук 1200 Гц
-1 → звук 2200 Гц
+We convert:
+0 → 1200 Hz tone  
+1 → 2200 Hz tone  
 
-Рация передаёт звук.
-Другой компьютер слушает звук и определяет частоту.
+A radio transmits sound.
+Another computer listens to the sound and detects the frequency.
 
-Так работает цифровая связь.
+That is digital communication.
 
 ---
 
-## 🚀 Как запустить
+## 📂 Project Structure
 
-### 1. Создать виртуальное окружение
+modem_tx.py — Transmitter  
+modem_rx.py — Receiver  
+requirements.txt — Dependencies  
+
+---
+
+## 🚀 Setup
+
+### 1. Create virtual environment
 
 python -m venv venv
 
-Linux / macOS:
-source venv/bin/activate
+Activate:
 
 Windows:
 venv\Scripts\activate
 
+Linux / macOS:
+source venv/bin/activate
+
 ---
 
-### 2. Установить зависимости
+### 2. Install dependencies
 
 pip install -r requirements.txt
 
 ---
 
-### 3. Запустить приёмник
+## ▶ Running the Demo
 
-python rx.py
+### Step 1 — Start receiver
 
----
+python modem_rx.py
 
-### 4. Запустить передатчик (на другом ПК)
+### Step 2 — Start transmitter (on another computer)
 
-python tx.py
-
----
-
-## 🔬 Эксперименты
-
-Попробуй:
-
-- изменить громкость
-- увеличить BIT_DURATION
-- добавить шум
-- передать длинное сообщение
-
-Посмотри, что происходит с данными.
+python modem_tx.py
 
 ---
 
-## 💡 Что ты изучаешь
+## 🔎 What You Will See
 
-- Биты
-- Частоты
-- Модуляцию
-- FFT (анализ спектра)
-- Как работает интернет на самом базовом уровне
+The receiver shows two lines:
+
+PHY: Physical layer (detected frequencies)
+BIT: Logical layer (decoded bits)
+
+Example:
+
+PHY: |++++|----|++++|----
+BIT:   1    0    1    0
+
+If synchronization fails:
+
+PHY: |..++|++--|--++|....
+BIT:   .    1    0    .
 
 ---
 
-Теперь ты сделал свой собственный модем 🚀
+## 🧠 Concepts You Learn
+
+- Bits
+- Symbols
+- Frequency Shift Keying (FSK)
+- FFT (Fast Fourier Transform)
+- Preamble detection
+- Physical vs Logical layers
+
+---
+
+## 🔬 Experiments
+
+Try:
+
+- Lowering volume
+- Moving radios apart
+- Introducing noise
+- Increasing BIT_DURATION
+
+Observe how errors appear.
+
+---
+
+You just built your own digital modem.

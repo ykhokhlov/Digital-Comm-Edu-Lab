@@ -6,6 +6,8 @@ FREQ_0 = 1200
 FREQ_1 = 2200
 SAMPLE_RATE = 44100
 
+PREAMBLE = "10101010" * 4
+
 BUFFER_SIZE = int(SAMPLE_RATE * BIT_DURATION)
 
 def detect_frequency(chunk):
@@ -49,5 +51,19 @@ except KeyboardInterrupt:
 print("\nПолученные биты:")
 print(bits)
 
-print("\nДекодированный текст:")
-print(bits_to_text(bits))
+print("\nПоиск преамбулы...")
+
+start_index = bits.find(PREAMBLE)
+
+if start_index == -1:
+    print("Преамбула не найдена.")
+else:
+    print("Преамбула найдена.")
+    data_start = start_index + len(PREAMBLE)
+    data_bits = bits[data_start:]
+
+    print("\nДанные после преамбулы:")
+    print(data_bits)
+
+    print("\nДекодированный текст:")
+    print(bits_to_text(data_bits))
