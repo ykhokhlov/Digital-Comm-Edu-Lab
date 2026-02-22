@@ -69,12 +69,12 @@ BIT: Logical layer (decoded bits)
 
 Example:
 
-PHY: |++++|----|++++|----
-BIT:   1    0    1    0
+PHY: |++++|----|++++|----\
+BIT: &emsp;&emsp;1&emsp;&emsp;&emsp;&emsp;0&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;&nbsp;&nbsp;0
 
 If synchronization fails:
 
-PHY: |..++|++--|--++|....
+PHY: |..++|++--|--++|....\
 BIT:   .    1    0    .
 
 ---
