@@ -12,7 +12,7 @@ BUFFER_SIZE = int(SAMPLE_RATE * BIT_DURATION)
 
 def detect_frequency(chunk):
     fft = np.fft.fft(chunk)
-    freqs = np.fft.fftfreq(len(fft), 1/SAMPLE_RATE)
+    freqs = np.fft.fftfreq(len(fft), 1 / SAMPLE_RATE)
     idx = np.argmax(np.abs(fft[:len(fft)//2]))
     return abs(freqs[idx])
 
@@ -24,9 +24,11 @@ def bits_to_text(bits):
             chars.append(chr(int(byte, 2)))
     return ''.join(chars)
 
-print("Ожидание передачи... Нажмите Ctrl+C для остановки.")
+print("Waiting for transmission... Press Ctrl+C to stop.\n")
 
 bits = ""
+phy_line = "PHY: "
+bit_line = "BIT: "
 
 try:
     with sd.InputStream(samplerate=SAMPLE_RATE, channels=1) as stream:
@@ -36,34 +38,45 @@ try:
 
             freq = detect_frequency(chunk)
 
+            # Chunk separator
+            phy_line += "|"
+            bit_line += " "
+
             if abs(freq - FREQ_0) < 200:
+                phy_line += "----"
                 bits += "0"
-                print("0", end="", flush=True)
+                bit_line += "0"
             elif abs(freq - FREQ_1) < 200:
+                phy_line += "++++"
                 bits += "1"
-                print("1", end="", flush=True)
+                bit_line += "1"
             else:
-                print(".", end="", flush=True)
+                phy_line += "...."
+                bit_line += "."
+
+            print(phy_line)
+            print(bit_line)
+            print()
 
 except KeyboardInterrupt:
-    print("\n\nПриём остановлен.")
+    print("\nReception stopped.\n")
 
-print("\nПолученные биты:")
+print("Raw received bits:")
 print(bits)
 
-print("\nПоиск преамбулы...")
+print("\nSearching for preamble...")
 
 start_index = bits.find(PREAMBLE)
 
 if start_index == -1:
-    print("Преамбула не найдена.")
+    print("Preamble not found.")
 else:
-    print("Преамбула найдена.")
+    print("Preamble found.")
     data_start = start_index + len(PREAMBLE)
     data_bits = bits[data_start:]
 
-    print("\nДанные после преамбулы:")
+    print("\nBits after preamble:")
     print(data_bits)
 
-    print("\nДекодированный текст:")
+    print("\nDecoded text:")
     print(bits_to_text(data_bits))
