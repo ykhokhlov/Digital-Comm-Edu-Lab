@@ -10,11 +10,21 @@ PREAMBLE = "10101010" * 4
 
 BUFFER_SIZE = int(SAMPLE_RATE * BIT_DURATION)
 
+SYMBOLS_PER_CHUNK = 4
+
 def detect_frequency(chunk):
     fft = np.fft.fft(chunk)
     freqs = np.fft.fftfreq(len(fft), 1 / SAMPLE_RATE)
     idx = np.argmax(np.abs(fft[:len(fft)//2]))
     return abs(freqs[idx])
+
+def classify_freq(freq):
+    if abs(freq - FREQ_0) < 200:
+        return '-', '0'
+    elif abs(freq - FREQ_1) < 200:
+        return '+', '1'
+    else:
+        return '.', None
 
 def bits_to_text(bits):
     chars = []
@@ -36,23 +46,22 @@ try:
             chunk, _ = stream.read(BUFFER_SIZE)
             chunk = chunk.flatten()
 
-            freq = detect_frequency(chunk)
+            # PHY: split chunk into sub-parts, classify each independently
+            sub_size = len(chunk) // SYMBOLS_PER_CHUNK
+            phy_chars = []
+            for i in range(SYMBOLS_PER_CHUNK):
+                sub = chunk[i * sub_size:(i + 1) * sub_size]
+                sym, _ = classify_freq(detect_frequency(sub))
+                phy_chars.append(sym)
+            phy_line += "|" + "".join(phy_chars)
 
-            # Chunk separator
-            phy_line += "|"
-            bit_line += " "
+            # BIT: decision from full chunk; 5 chars wide to match PHY slot
+            _, bit = classify_freq(detect_frequency(chunk))
+            bit_label = bit if bit else "."
+            bit_line += "  " + bit_label + "  "
 
-            if abs(freq - FREQ_0) < 200:
-                phy_line += "----"
-                bits += "0"
-                bit_line += "0"
-            elif abs(freq - FREQ_1) < 200:
-                phy_line += "++++"
-                bits += "1"
-                bit_line += "1"
-            else:
-                phy_line += "...."
-                bit_line += "."
+            if bit:
+                bits += bit
 
             print(phy_line)
             print(bit_line)
